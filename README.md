@@ -1,2 +1,2 @@
 # ProjectManager
-Object Model for Project Management Application
+Object Model for Project Management Application: Can be used to implement an application to manage any project with a list of tasks, users with different roles to complete these tasks and resources to be ultilized for these tasks. This model assumes a one-to-one relationhip between tasks and users at a given time. Specially designed to handle time management of tasks and to gauge feasibility of deadlines. 
