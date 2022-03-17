@@ -16,9 +16,11 @@ export class Project {
     public removeResource(resourceid: string) { }
 
     public getAllResources() { }
+
+    public getAllUsers() { }
 }
 
-export class User {
+export class User extends Project{
     public userid: string;
     public password: string;
     public name: string;
@@ -26,12 +28,15 @@ export class User {
     public schedule: number;
 
     constructor(userid: string, password: string, name: string, designation: Designation, schedule: number) {
+        super();
         this.userid = userid;
         this.password = password;
         this.name = name;
         this.desination = designation;
         this.schedule = schedule;
     }
+    
+    public getUser(userid: string){}
 
     public assignTask(taskid: string) { }
 
@@ -41,7 +46,7 @@ export class User {
 }
 
 
-export class Task {
+export class Task extends Project {
     public taskid: string;
     public taskName: string;
     public totalTimeEstimate: number;
@@ -52,6 +57,7 @@ export class Task {
 
 
     constructor(taskid: string, taskName: string, totalTimeEstimate: number, ownerid: number) {
+        super();
         this.taskid = taskid;
         this.taskName = taskName;
         this.totalTimeEstimate = totalTimeEstimate;
@@ -75,20 +81,23 @@ export class Task {
     public addDependency(taskid: string) { }
 
     public checkCompletionByDate(date: Date) {
-
+        
     }
 }
 
-export class Resource {
+export class Resource extends Project{
     public resourceid: string;
     public resourcename: string;
     public userid: string = '';
     public inUse: boolean = false;
 
     constructor(resourceid: string, resourcename: string) {
+        super();
         this.resourceid = resourceid;
         this.resourcename = resourcename;
     }
+
+    public getResource(resourceid: string){}
 
     public allocate(userid: string) { }
 
