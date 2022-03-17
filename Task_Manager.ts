@@ -1,6 +1,7 @@
 export class Project {
     public allTaskSList: Array<Task> = [];
     public resource: Array<Resource> = [];
+    public users: Array<User> = []
 
     constructor() {
     }
@@ -17,10 +18,12 @@ export class Project {
 
     public getAllResources() { }
 
-    public getAllUsers() { }
+    public getAllUsers(): Array<User> {
+        return this.users;
+    }
 }
 
-export class User extends Project{
+export class User extends Project {
     public userid: string;
     public password: string;
     public name: string;
@@ -35,8 +38,8 @@ export class User extends Project{
         this.desination = designation;
         this.schedule = schedule;
     }
-    
-    public getUser(userid: string){}
+
+    public getUser(userid: string) { }
 
     public assignTask(taskid: string) { }
 
@@ -51,12 +54,12 @@ export class Task extends Project {
     public taskName: string;
     public totalTimeEstimate: number;
     public timeLogged: number = 0;
-    public ownerid: number;
+    public ownerid: string;
     public status: TaskStatus = TaskStatus.Open;
     public dependencies: Array<string> = [];
 
 
-    constructor(taskid: string, taskName: string, totalTimeEstimate: number, ownerid: number) {
+    constructor(taskid: string, taskName: string, totalTimeEstimate: number, ownerid: string) {
         super();
         this.taskid = taskid;
         this.taskName = taskName;
@@ -68,7 +71,9 @@ export class Task extends Project {
 
     public logWork(hours: number) { }
 
-    public getRemainingTime() { }
+    public getRemainingTime(): number {
+        return (this.totalTimeEstimate - this.timeLogged)
+    }
 
     public getTimeLogged() { }
 
@@ -80,12 +85,22 @@ export class Task extends Project {
 
     public addDependency(taskid: string) { }
 
-    public checkCompletionByDate(date: Date) {
-        
+    public checkCompletionByDate(date: Date): boolean {
+        const user = super.getAllUsers().find(element => element['userid'] == this.ownerid);
+        if (user && this.dependencies.length == 0) {
+            const schedule = user['schedule'];
+            const remainingHours = this.getRemainingTime();
+            const daysNeeded = remainingHours / schedule;
+            const oneDay = 24 * 60 * 60 * 1000;
+            const remainingDays = (date.valueOf() - Date.now()) / oneDay;
+            return (daysNeeded <= remainingDays);
+        }
+        else
+            return false;
     }
 }
 
-export class Resource extends Project{
+export class Resource extends Project {
     public resourceid: string;
     public resourcename: string;
     public userid: string = '';
@@ -97,7 +112,7 @@ export class Resource extends Project{
         this.resourcename = resourcename;
     }
 
-    public getResource(resourceid: string){}
+    public getResource(resourceid: string) { }
 
     public allocate(userid: string) { }
 
