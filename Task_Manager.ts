@@ -27,23 +27,19 @@ export class User extends Project {
     public userid: string;
     public password: string;
     public name: string;
-    public desination: Designation;
+    public role: string;
     public schedule: number;
 
-    constructor(userid: string, password: string, name: string, designation: Designation, schedule: number) {
+    constructor(userid: string, password: string, name: string, role: string, schedule: number) {
         super();
         this.userid = userid;
         this.password = password;
         this.name = name;
-        this.desination = designation;
+        this.role = role;
         this.schedule = schedule;
     }
 
     public getUser(userid: string) { }
-
-    public assignTask(taskid: string) { }
-
-    public unassignTask(taskid: string) { }
 
     public getUserTasks() { }  //returns taskList for user
 }
@@ -57,14 +53,18 @@ export class Task extends Project {
     public ownerid: string;
     public status: TaskStatus = TaskStatus.Open;
     public dependencies: Array<string> = [];
+    public resourceType: string;
+    public userRole: string;
 
 
-    constructor(taskid: string, taskName: string, totalTimeEstimate: number, ownerid: string) {
+    constructor(taskid: string, taskName: string, totalTimeEstimate: number, ownerid: string, resourceType: string, userRole: string) {
         super();
         this.taskid = taskid;
         this.taskName = taskName;
         this.totalTimeEstimate = totalTimeEstimate;
-        this.ownerid = ownerid
+        this.ownerid = ownerid;
+        this.resourceType=resourceType;
+        this.userRole=userRole;
     }
 
     public getTask(taskid: string) { }
@@ -79,24 +79,35 @@ export class Task extends Project {
 
     public updateTaskStatus(status: TaskStatus) { }
 
+    public assignTask(userid: string) { }
+
+    public unassignTask() { }
+
     public updateTask(updatedTask: Task) { }
 
     public checkStatus() { }
 
+    public timeToComplete(): number | boolean {
+        const user = super.getAllUsers().find(element => element['userid'] == this.ownerid);
+        if (this.dependencies.length > 0 && this.checkStatus)
+            if (user && this.dependencies.length == 0) {
+                const schedule = user['schedule'];
+                const remainingHours = this.getRemainingTime();
+                const daysNeeded = remainingHours / schedule;
+                return daysNeeded;
+            }
+            else
+                return false;
+
+    }
+
     public addDependency(taskid: string) { }
 
     public checkCompletionByDate(date: Date): boolean {
-        const user = super.getAllUsers().find(element => element['userid'] == this.ownerid);
-        if (user && this.dependencies.length == 0) {
-            const schedule = user['schedule'];
-            const remainingHours = this.getRemainingTime();
-            const daysNeeded = remainingHours / schedule;
-            const oneDay = 24 * 60 * 60 * 1000;
-            const remainingDays = (date.valueOf() - Date.now()) / oneDay;
-            return (daysNeeded <= remainingDays);
-        }
-        else
-            return false;
+        const daysNeeded = this.timeToComplete();
+        const oneDay = 24 * 60 * 60 * 1000;
+        const remainingDays = (date.valueOf() - Date.now()) / oneDay;
+        return (daysNeeded ? (daysNeeded <= remainingDays) : false);
     }
 }
 
@@ -117,11 +128,6 @@ export class Resource extends Project {
     public allocate(userid: string) { }
 
     public deAllocate() { }
-}
-
-enum Designation {
-    Manager,
-    User
 }
 
 enum TaskStatus {
