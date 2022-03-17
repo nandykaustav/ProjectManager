@@ -28,7 +28,7 @@ export class User extends Project {                 //Class representing Users w
     public password: string;
     public name: string;
     public role: string;                            //Attribute representing the role/type of user. Manager will have role as "Manager"
-    public schedule: number;
+    public schedule: number;                        //Represents the number of hours the user works per day
 
     constructor(userid: string, password: string, name: string, role: string, schedule: number) {
         super();
